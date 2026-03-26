@@ -1,0 +1,6 @@
+<Solution>
+  <Project Path="Ability.Api/Ability.Api.csproj" />
+  <Project Path="Ability.Domain/Ability.Domain.csproj" />
+  <Project Path="Ability.Infrastructure/Ability.Infrastructure.csproj" />
+  <Project Path="Ability.Worker/Ability.Worker.csproj" />
+</Solution>
