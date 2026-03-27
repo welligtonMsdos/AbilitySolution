@@ -1,12 +1,25 @@
-var builder = WebApplication.CreateBuilder(args);
+using Ability.Api.Interfaces;
+using Ability.Api.Services;
+using Ability.Domain.Interfaces;
+using Ability.Infrastructure.Repositories;
+using MongoDB.Driver;
 
-// Add services to the container.
+var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
 
-var app = builder.Build();
+var connectionString = builder.Configuration.GetConnectionString("Mongo");
 
-// Configure the HTTP request pipeline.
+var dbName = builder.Configuration["DatabaseName"] ?? "AbilityDb";
+
+builder.Services.AddSingleton<IMongoClient>(new MongoClient(connectionString));
+
+builder.Services.AddScoped<INoticiaRepository>(sp =>
+    new NoticiaRepository(sp.GetRequiredService<IMongoClient>(), dbName));
+
+builder.Services.AddScoped<INoticiaService, NoticiaService>();
+
+var app = builder.Build();
 
 app.UseHttpsRedirection();
 

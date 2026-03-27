@@ -9,7 +9,7 @@ public class NoticiaRepository : INoticiaRepository
 {
     private readonly IMongoCollection<Noticia> _mongoCollection;
 
-    public NoticiaRepository(IMongoClient mongoClient)
+    public NoticiaRepository(IMongoClient mongoClient, string dbName)
     {
         var database = mongoClient.GetDatabase("RpaMsn");
 
