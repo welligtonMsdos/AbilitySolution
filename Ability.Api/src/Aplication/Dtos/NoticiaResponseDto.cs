@@ -1,4 +1,4 @@
-﻿namespace Ability.Api.Dtos;
+﻿namespace Ability.Api.src.Aplication.Dtos;
 
 public record NoticiaResponseDto(string Id,
                                  string Titulo,

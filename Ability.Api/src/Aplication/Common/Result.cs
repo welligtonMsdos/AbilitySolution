@@ -1,4 +1,4 @@
-﻿namespace Ability.Api.Common;
+﻿namespace Ability.Api.src.Aplication.Common;
 
 public class Result<T>
 {

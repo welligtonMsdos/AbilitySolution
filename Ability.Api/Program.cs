@@ -1,11 +1,16 @@
-using Ability.Api.Interfaces;
-using Ability.Api.Services;
+using Ability.Api.src.Aplication.Interfaces;
+using Ability.Api.src.Aplication.Services;
+using Ability.Api.src.Aplication.Validators;
 using Ability.Domain.Interfaces;
 using Ability.Infrastructure.Repositories;
+using FluentValidation;
 using MongoDB.Driver;
 using Scalar.AspNetCore;
 
+
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddValidatorsFromAssemblyContaining<NoticiaValidator>();
 
 builder.Services.AddControllers();
 
