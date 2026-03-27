@@ -45,6 +45,17 @@ Para garantir a escalabilidade e a robustez do sistema, foram tomadas as seguint
 
 ---
 
+### 1. Global Exception Middleware
+Localizado na camada de apresentação (`Ability.Api`), este componente envolve toda a requisição em um bloco de segurança.
+* **Rede de Segurança:** Captura qualquer exceção não tratada (como falhas de conexão com o MongoDB ou erros de lógica) e as converte em uma resposta JSON padronizada com o `Result Pattern`.
+* **Segurança de Dados:** Impede que *stack traces* internos sejam expostos ao cliente em ambiente de produção, retornando um erro `500 Internal Server Error` amigável.
+
+### 2. Custom Validation Action Filter
+Um filtro de ação customizado que atua antes da execução dos Controllers.
+* **Auto-validação:** Utiliza reflexão para identificar e executar automaticamente o `IValidator<T>` (FluentValidation) correspondente ao DTO da requisição.
+* **Desacoplamento:** Remove a necessidade de repetir `if (!ModelState.IsValid)` em todos os métodos do Controller, mantendo o código limpo e focado na regra de negócio.
+* **Padronização:** Retorna automaticamente um `400 Bad Request` contendo um dicionário detalhado de erros de validação sempre que um contrato é violado.
+
 ## 📑 Funcionalidades da API
 
 Além da automação via Worker, a **Ability.Api** expõe um **CRUD completo** para o gerenciamento das notícias extraídas:
