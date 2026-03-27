@@ -3,6 +3,7 @@ using Ability.Api.Services;
 using Ability.Domain.Interfaces;
 using Ability.Infrastructure.Repositories;
 using MongoDB.Driver;
+using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -19,7 +20,18 @@ builder.Services.AddScoped<INoticiaRepository>(sp =>
 
 builder.Services.AddScoped<INoticiaService, NoticiaService>();
 
+builder.Services.AddOpenApi();
+
 var app = builder.Build();
+
+app.MapOpenApi();
+
+app.MapScalarApiReference(options =>
+{
+    options.WithTitle("Ability API - Documentação")
+           .WithTheme(ScalarTheme.Moon)
+           .WithDefaultHttpClient(ScalarTarget.CSharp, ScalarClient.HttpClient);
+});
 
 app.UseHttpsRedirection();
 

@@ -1,13 +1,11 @@
 ﻿using Ability.Api.Common;
 using Ability.Api.Dtos;
 using Ability.Api.Interfaces;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Ability.Api.Controllers;
 
 [ApiController]
-[Authorize]
 [Route("api/[controller]")]
 public class NoticiaController : ControllerBase
 {

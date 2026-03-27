@@ -19,7 +19,6 @@ public class RpaWorkService: BackgroundService
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
         using var playwright = await Playwright.CreateAsync();
-
         await using var browser = await playwright.Chromium.LaunchAsync(new BrowserTypeLaunchOptions
         {
             Headless = true,
@@ -30,59 +29,56 @@ public class RpaWorkService: BackgroundService
         {
             try
             {
-                _logger.LogInformation("Starting MSN extraction: {time}", DateTimeOffset.Now);
+                _logger.LogInformation("Iniciando extração MSN: {time}", DateTimeOffset.Now);
 
                 var page = await browser.NewPageAsync();
-
+                
                 await page.GotoAsync("https://www.msn.com/pt-br", new PageGotoOptions
                 {
                     WaitUntil = WaitUntilState.NetworkIdle,
                     Timeout = 60000
                 });
+                
+                await page.WaitForSelectorAsync("a#heading", new PageWaitForSelectorOptions { Timeout = 10000 });
 
-                var cards = await page.QuerySelectorAllAsync("div[data-testid='card-container'], section.content-card");
+                var cards = await page.QuerySelectorAllAsync("a#heading");
 
                 foreach (var card in cards.Take(10))
                 {
                     try
                     {
-                        var element = await card.QuerySelectorAsync("h3");
-
-                        var titulo = (await element?.InnerTextAsync() ?? "").Trim();
-
-                        var link = await card.QuerySelectorAsync("a");
-
-                        var url = await link?.GetAttributeAsync("href") ?? "";
-
+                        var titulo = await card.EvaluateAsync<string>("el => el.innerText");
+                        var url = await card.EvaluateAsync<string>("el => el.href");
+                      
                         if (!string.IsNullOrEmpty(url) && !url.StartsWith("http"))
-                            url = "https://www.msn.com" + url;
+                            url = "https://www.msn.com" + (url.StartsWith("/") ? "" : "/") + url;
 
                         if (!string.IsNullOrWhiteSpace(titulo) && !string.IsNullOrEmpty(url))
                         {
                             if (!await _repository.JaExisteUrlAsync(url))
                             {
-                                var news = new Noticia { Titulo = titulo, Url = url };
-
+                                var news = new Noticia { Titulo = titulo.Trim(), Url = url };
                                 await _repository.SalvarNoticiaAsync(news);
-
-                                _logger.LogInformation("New story captured {title}", titulo);
+                                _logger.LogInformation("Nova notícia capturada: {title}", titulo);
                             }
                         }
                     }
                     catch (Exception ex)
                     {
-                        _logger.LogWarning("Error processing a specific card: {msg}", ex.Message);
+                        _logger.LogWarning("Erro ao processar um card específico: {msg}", ex.Message);
                     }
-
-                    _logger.LogInformation("Waiting for next execution...");
-
-                    await Task.Delay(TimeSpan.FromMinutes(5), stoppingToken);
                 }
+               
+                await page.CloseAsync();
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Critical failure in extraction round.");
+                _logger.LogError(ex, "Falha crítica na rodada de extração.");
             }
+            
+            _logger.LogInformation("Aguardando 5 minutos para a próxima varredura...");
+
+            await Task.Delay(TimeSpan.FromMinutes(5), stoppingToken);
         }
     }
 }

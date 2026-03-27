@@ -20,6 +20,7 @@
     environment:      
       - ConnectionStrings__Mongo=${MONGO_CONNECTION}
       - DatabaseName=${MONGO_DB_NAME}
+      - ASPNETCORE_ENVIRONMENT=Development
     depends_on:
       - mongodb
 
@@ -28,6 +29,9 @@
       context: .. 
       dockerfile: Ability.Worker/Dockerfile
     container_name: ability_worker
+    dns:
+    - 8.8.8.8
+    - 1.1.1.1
     environment:
       - ConnectionStrings__Mongo=${MONGO_CONNECTION}
       - DatabaseName=${MONGO_DB_NAME}

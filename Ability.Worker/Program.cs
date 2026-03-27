@@ -14,6 +14,8 @@ builder.Services.AddSingleton<IMongoClient>(new MongoClient(connectionString));
 builder.Services.AddScoped<INoticiaRepository>(sp =>
     new NoticiaRepository(sp.GetRequiredService<IMongoClient>(), dbName));
 
+builder.Services.AddScoped<IRpaRepository, RpaRepository>();
+
 builder.Services.AddHostedService<RpaWorkService>();
 
 var host = builder.Build();
