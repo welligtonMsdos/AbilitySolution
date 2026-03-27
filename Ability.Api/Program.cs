@@ -1,14 +1,26 @@
 using Ability.Api.src.Aplication.Interfaces;
+using Ability.Api.src.Aplication.Middlewares;
 using Ability.Api.src.Aplication.Services;
 using Ability.Api.src.Aplication.Validators;
 using Ability.Domain.Interfaces;
 using Ability.Infrastructure.Repositories;
 using FluentValidation;
+using Microsoft.AspNetCore.Mvc;
 using MongoDB.Driver;
 using Scalar.AspNetCore;
 
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.Configure<ApiBehaviorOptions>(options =>
+{
+    options.SuppressModelStateInvalidFilter = true;
+});
+
+builder.Services.AddControllers(options =>
+{    
+    options.Filters.Add<ValidationFilter>();
+});
 
 builder.Services.AddValidatorsFromAssemblyContaining<NoticiaValidator>();
 
@@ -28,6 +40,8 @@ builder.Services.AddScoped<INoticiaService, NoticiaService>();
 builder.Services.AddOpenApi();
 
 var app = builder.Build();
+
+app.UseMiddleware<ExceptionMiddleware>();
 
 app.MapOpenApi();
 
