@@ -79,16 +79,31 @@ Além da automação via Worker, a **Ability.Api** expõe um **CRUD completo** p
 1.  **Clone o repositório:**
     ```bash
     git clone https://github.com/welligtonMsdos/AbilitySolution.git
-    cd Ability.Api
+    cd AbilitySolution
     ```
+### ⚙️ Configuração das Variáveis de Ambiente
 
-2.  **Subir os containers:**
+A solução utiliza um arquivo `.env` para gerenciar credenciais e configurações de infraestrutura de forma segura. Siga os passos abaixo para configurar o seu ambiente local:
+
+2. **Crie o arquivo .env a partir do exemplo:**
+   Na raiz do projeto, execute o comando de acordo com o seu sistema operacional:
+
+   * **Linux / Mac (Terminal):**
+       ```bash
+       cp .env.example .env
+       ```
+   * **Windows (PowerShell):**
+       ```powershell
+       copy .env.example .env
+       ```
+       
+3.  **Subir os containers:**
     O projeto está configurado para orquestrar o banco de dados e as aplicações automaticamente:
     ```bash
     docker-compose up -d --build
     ```
 
-3.  **Acessar a API:**
+4.  **Acessar a API:**
     A API estará disponível no endereço `http://localhost:5015`. Você pode testar o carregamento das notícias capturadas através da rota:
     * **GET:** `http://localhost:5015/scalar/v1`
 
