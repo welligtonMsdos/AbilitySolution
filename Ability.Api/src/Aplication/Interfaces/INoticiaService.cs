@@ -1,6 +1,6 @@
 ﻿using Ability.Api.Dtos;
 
-namespace Ability.Api.Interfaces;
+namespace Ability.Api.src.Aplication.Interfaces;
 
 public interface INoticiaService
 {

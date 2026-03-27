@@ -1,7 +1,7 @@
 ﻿using Ability.Api.Dtos;
 using Ability.Domain.Entities;
 
-namespace Ability.Api.Extensions;
+namespace Ability.Api.src.Aplication.Extensions;
 
 public static class NoticiaExtensions
 {

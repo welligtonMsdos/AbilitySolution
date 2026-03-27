@@ -3,7 +3,7 @@ using Ability.Api.Extensions;
 using Ability.Api.Interfaces;
 using Ability.Domain.Interfaces;
 
-namespace Ability.Api.Services;
+namespace Ability.Api.src.Aplication.Services;
 
 public class NoticiaService : INoticiaService
 {

@@ -3,7 +3,7 @@ using Ability.Api.Dtos;
 using Ability.Api.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Ability.Api.Controllers;
+namespace Ability.Api.src.Aplication.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
