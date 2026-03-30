@@ -20,14 +20,17 @@ public class RpaWorkService: BackgroundService
     {        
         using var playwright = await Playwright.CreateAsync();
 
-        while (!stoppingToken.IsCancellationRequested)
-        {            
-            await using var browser = await playwright.Chromium.LaunchAsync(new BrowserTypeLaunchOptions
-            {
-                Headless = true,
-                Args = new[] { "--no-sandbox", "--disable-setuid-sandbox" }
-            });
+        await using var browser = await playwright.Chromium.LaunchAsync(new BrowserTypeLaunchOptions 
+        {
+            Headless = true,
+            Args = new[] { 
+                "--no-sandbox", 
+                "--disable-setuid-sandbox",
+                "--disable-dev-shm-usage"}
+        });
 
+        while (!stoppingToken.IsCancellationRequested)
+        {   
             IPage? page = null;
             try
             {
@@ -37,11 +40,11 @@ public class RpaWorkService: BackgroundService
                
                 await page.GotoAsync("https://www.msn.com/pt-br", new PageGotoOptions
                 {
-                    WaitUntil = WaitUntilState.NetworkIdle,
+                    WaitUntil = WaitUntilState.DOMContentLoaded,
                     Timeout = 60000
                 });
                
-                await page.WaitForSelectorAsync("a#heading", new() { State = WaitForSelectorState.Attached, Timeout = 20000 });
+                await page.WaitForSelectorAsync("a#heading", new() { State = WaitForSelectorState.Attached, Timeout = 30000 });
                 
                 var cards = await page.QuerySelectorAllAsync("a#heading");
                 _logger.LogInformation("Encontrados {count} cards para processar.", cards.Count);
@@ -76,20 +79,22 @@ public class RpaWorkService: BackgroundService
                 }
             }
             catch (Exception ex)
-            {
+            {                
                 _logger.LogError(ex, "Falha crítica na rodada de extração.");
-               
-                if (page != null) await page.ScreenshotAsync(new() { Path = "erro_extracao.png" });
+             
+                if (page != null)
+                    await page.ScreenshotAsync(new() { Path = $"erro_{DateTime.Now:ticks}.png" });
             }
             finally
             {                
                 if (page != null) await page.CloseAsync();
-                await browser.CloseAsync();
             }
 
             _logger.LogInformation("Aguardando 5 minutos para a próxima varredura...");
 
             await Task.Delay(TimeSpan.FromMinutes(5), stoppingToken);
         }
+
+        await browser.CloseAsync();
     }
 }
