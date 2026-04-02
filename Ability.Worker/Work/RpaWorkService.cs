@@ -23,10 +23,12 @@ public class RpaWorkService: BackgroundService
         await using var browser = await playwright.Chromium.LaunchAsync(new BrowserTypeLaunchOptions 
         {
             Headless = true,
-            Args = new[] { 
-                "--no-sandbox", 
+            Args = new[] {
+                "--no-sandbox",
                 "--disable-setuid-sandbox",
-                "--disable-dev-shm-usage"}
+                "--disable-dev-shm-usage",
+                "--disable-gpu"
+            }
         });
 
         while (!stoppingToken.IsCancellationRequested)

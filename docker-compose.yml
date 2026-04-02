@@ -29,6 +29,7 @@
       context: . 
       dockerfile: Ability.Worker/Dockerfile
     container_name: ability_worker
+    shm_size: "1gb"
     dns:
     - 8.8.8.8
     - 1.1.1.1

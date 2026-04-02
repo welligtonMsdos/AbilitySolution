@@ -7,7 +7,6 @@ RUN apt-get update && \
     apt-get install -y --no-install-recommends \
     libgbm1 \
     libnss3 \
-    libatk1.0-0 \
     libatk-bridge2.0-0 \
     libcups2 \
     libdrm2 \
@@ -16,6 +15,11 @@ RUN apt-get update && \
     libxdamage1 \
     libxrandr2 \
     libasound2t64 \
+    libpangocairo-1.0-0 \
+    libgtk-3-0 \
+    libxshmfence1 \
+    fonts-liberation \
+    ca-certificates \
     && rm -rf /var/lib/apt/lists/*
 
 FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
@@ -37,18 +41,16 @@ RUN dotnet build "Ability.Worker.csproj" -c Release -o /app/build
 FROM build AS publish
 RUN dotnet publish "Ability.Worker.csproj" -c Release -o /app/publish /p:UseAppHost=false
 
+RUN dotnet tool install --global Microsoft.Playwright.CLI
+ENV PATH="$PATH:/root/.dotnet/tools"
+RUN playwright install chromium
+
 FROM base AS final
 WORKDIR /app
+
 COPY --from=publish /app/publish .
+COPY --from=publish /root/.cache/ms-playwright /root/.cache/ms-playwright
 
-# Precisamos do SDK temporariamente para instalar a ferramenta ou usar o npx
-# Mas como você já tem as libs no 'base', vamos apenas garantir que o Playwright funcione
-USER root
-
-# Instala o Node.js rapidamente apenas para rodar o instalador do Playwright (mais confiável em ambientes Docker)
-RUN apt-get update && apt-get install -y nodejs npm
-
-# Instala o Playwright e os navegadores
-RUN npx playwright install --with-deps chromium
+ENV PLAYWRIGHT_BROWSERS_PATH=/root/.cache/ms-playwright
 
 ENTRYPOINT ["dotnet", "Ability.Worker.dll"]
